@@ -1,0 +1,30 @@
+{
+  "resourceType": "GMProject",
+  "resourceVersion": "1.6",
+  "name": "Vuelta!",
+  "resources": [
+    {"id":{"name":"VueltaScripts","path":"scripts/VueltaScripts/VueltaScripts.yy",},"order":1,},
+    {"id":{"name":"Vuelta","path":"scripts/Vuelta/Vuelta.yy",},"order":0,},
+  ],
+  "defaultScriptType": 1,
+  "isEcma": false,
+  "configs": {
+    "name": "Default",
+    "children": [],
+  },
+  "RoomOrderNodes": [],
+  "Folders": [
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Extensions","folderPath":"folders/Extensions.yy","order":1,},
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Vuelta","folderPath":"folders/Extensions/Vuelta.yy","order":1,},
+  ],
+  "AudioGroups": [
+    {"resourceType":"GMAudioGroup","resourceVersion":"1.3","name":"audiogroup_default","targets":-1,},
+  ],
+  "TextureGroups": [
+    {"resourceType":"GMTextureGroup","resourceVersion":"1.3","name":"Default","isScaled":true,"compressFormat":"bz2","loadType":"default","directory":"","autocrop":true,"border":2,"mipsToGenerate":0,"groupParent":null,"targets":-1,},
+  ],
+  "IncludedFiles": [],
+  "MetaData": {
+    "IDEVersion": "2023.100.0.269",
+  },
+}
