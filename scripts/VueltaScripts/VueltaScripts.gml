@@ -1,5 +1,5 @@
-/// "Vuelta" es un sistema basado en lo creado por FriendlyCosmonaut pero utilizando funciones modernas de gml.
-/// Permite ejecutar "eventos" secuenciados uno tras el otro. Las Vueltas se deben de iniciar utilizando el metodo .start() o usando vuelta_start
+/// "Vuelta" es un sistema que permite ejecutar "eventos" secuenciados uno tras el otro. 
+/// Las Vueltas se deben de iniciar utilizando el metodo .start() o usando vuelta_start
 /// @param {string}               vueltaName  Nombre de este VueltaManager
 /// @param {array<Struct.Vuelta>} events      Array de eventos
 /// @param {bool}                 [seconds]   =true usar segundos(true) o steps(false)
@@ -21,7 +21,7 @@ function vuelta_start(_vuelta)
 /// @param {string} value
 function vuelta_set_variable(_key, _value)
 {
-	static v = new VueltaManager("",[]);
+	static v = new Vuelta();
 	v.setVariable(_key, _value);
 }
 
@@ -29,7 +29,7 @@ function vuelta_set_variable(_key, _value)
 /// @param {string} key
 function vuelta_get_variable(_key)
 {
-	static v = new VueltaManager("",[]);
+	static v = new Vuelta();
 	return (v.getVariable(_key) );
 }
 
@@ -37,8 +37,21 @@ function vuelta_get_variable(_key)
 /// @param {string} key
 function vuelta_remove_variable(_key)
 {
-	static v= new VueltaManager("",[]);
+	static v = new Vuelta();
 	return (v.removeVariable(_key) );
 }
 
+/// @desc Recrea todas las variables del sistema de Vuelta!
+function vuelta_reset_all_variables()
+{
+	static v= new Vuelta();
+	v.vars = {};
+}
 
+/// @ignore
+/// @param {string} debugMessage
+function vuelta_trace(_message)
+{
+	// VueltaSystem(VueltaEvent): some message
+	show_debug_message("VueltaSystem({0}): {1}", is, _message);
+}

@@ -1,9 +1,9 @@
 {
-  "ResourceOrderSettings": [
-    {"name":"VueltaScripts","path":"scripts/VueltaScripts/VueltaScripts.yy","order":1,},
-  ],
   "FolderOrderSettings": [
-    {"name":"Extensions","path":"folders/Extensions.yy","order":1,},
-    {"name":"Vuelta","path":"folders/Extensions/Vuelta.yy","order":1,},
+    {"name":"Extensions","order":1,"path":"folders/Extensions.yy",},
+    {"name":"Vuelta","order":1,"path":"folders/Extensions/Vuelta.yy",},
+  ],
+  "ResourceOrderSettings": [
+    {"name":"VueltaScripts","order":1,"path":"scripts/VueltaScripts/VueltaScripts.yy",},
   ],
 }
