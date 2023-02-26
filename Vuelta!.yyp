@@ -11,18 +11,18 @@
   },
   "defaultScriptType": 1,
   "Folders": [
-    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Extensions","folderPath":"folders/Extensions.yy","order":1,},
-    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Vuelta","folderPath":"folders/Extensions/Vuelta.yy","order":1,},
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Extensions","folderPath":"folders/Extensions.yy",},
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Vuelta","folderPath":"folders/Extensions/Vuelta.yy",},
   ],
   "IncludedFiles": [],
   "isEcma": false,
   "LibraryEmitters": [],
   "MetaData": {
-    "IDEVersion": "2023.200.0.281",
+    "IDEVersion": "2023.200.0.299",
   },
   "resources": [
-    {"id":{"name":"VueltaScripts","path":"scripts/VueltaScripts/VueltaScripts.yy",},"order":1,},
-    {"id":{"name":"Vuelta","path":"scripts/Vuelta/Vuelta.yy",},"order":0,},
+    {"id":{"name":"VueltaScripts","path":"scripts/VueltaScripts/VueltaScripts.yy",},},
+    {"id":{"name":"Vuelta","path":"scripts/Vuelta/Vuelta.yy",},},
   ],
   "RoomOrderNodes": [],
   "TextureGroups": [

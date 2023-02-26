@@ -1,9 +1,8 @@
-#macro VUELTA_DEBUG true        // Permite mostrar mensajes
-#macro VUELTA_SHOW_DELAY false
-#macro VUELTA_ACTIVE global.__vueltaActive
+#macro __VUELTA_VERSION    "v1.0"
+#macro __VUELTA_DEBUG      true        // Permite mostrar mensajes
+#macro __VUELTA_SHOW_DELAY false
 
-/// @ignore
-global.__vueltaActive = noone;
+show_debug_message("Vuelta! {0} te da la bienvenida", __VUELTA_VERSION);
 
 /// @desc Padres de todos
 function Vuelta() constructor 
@@ -17,7 +16,9 @@ function Vuelta() constructor
 	name  = "";
 	/// @ignore Para buscar este Evento
 	id    = "";
-	
+	/// @ignore
+	message = undefined;
+
 	/// @ignore
 	ready = false;
 	/// @ignore
@@ -27,7 +28,19 @@ function Vuelta() constructor
 	timeScale = 1;
 	/// @ignore
 	manager = weak_ref_create(vars);
+
+	/// @ignore
+	/// @desc Funcion a ejecutar cuando inicia el vuelta
+	fnStart = function() {}
 	
+	/// @ignore
+	/// @desc Funcion a ejecutar cuando termina el Vuelta
+	fnEnd = function() {}
+
+	/// @ignore
+	/// @desc Funcion al cambiar de evento
+	fnChange = function() {}
+
 	#region METHODS
 	#region Global
 	/// @func setVariable(key, value)
@@ -139,40 +152,48 @@ function Vuelta() constructor
 	{
 		return ready; 
 	}
-	
-	/// @desc Funcion a ejecutar cuando inicia el vuelta
-	funStart = function() {}
-	
-	/// @param {function} funStart
-	static setFunStart = function(_fun) 
+
+	/// @param {function} endFunction
+	static setFnEnd  = function(_fn) 
 	{
-		funStart = _fun;
+		fnEnd = _fn;
 		return self;
 	}
 	
-	/// @desc Funcion a ejecutar cuando termina el Vuelta
-	funEnd = function() {}
-	
-	/// @param {function} funEnd
-	static setFunEnd = function(_fun)
+	/// @param {function} startFunction
+	static setFnStart = function(_fn)
 	{
-		funEnd = _fun;
+		fnStart = _fn;
 		return self;
 	}
 	
-	/// @desc Funcion a ejecutar entre eventos
-	static funBetween = function() {}
-	
+	/// @param {function} changeFunction
+	static setFnChange = function(_fn)
+	{
+		fnChange = _fn;
+		return self;
+	}
+
+	/// @desc Function Description
+	/// @param {string} message mensaje a mostrar
+	static debugShow = function(_msg) 
+	{
+		message = _msg;
+		return self;
+	}
+
 	#endregion
 }
 
-/// @ignore
-/// "Vuelta" es un sistema basado en lo creado por FriendlyCosmonaut pero utilizando funciones modernas de gml.
-/// Permite ejecutar "eventos" secuenciados uno tras el otro. Las Vueltas se deben de iniciar utilizando el metodo .start() o usando vuelta_start
+/** @desc  
+    Vuelta! es un sistema que permite ejecutar "eventos" secuenciados uno tras el otro. 
+    Las Vueltas se deben de iniciar utilizando el metodo .start() o usando vuelta_start
+*/
 /// @param {string}               vueltaName  Nombre de este VueltaManager
 /// @param {array<Struct.Vuelta>} events      Array de eventos
 /// @param {bool}                 [seconds]   =true usar segundos(true) o frames(false)
 /// @param {real}                 [timeScale] =1 Dilatacion de tiempo
+/// @ignore
 function VueltaManager(_name, _events, _useSeconds=true, _timeScale=1) : Vuelta() constructor 
 {
 	if (!is_array(_events) ) {show_error("VueltaSystem: no se pasaron eventos a un manager", true); }
@@ -271,10 +292,13 @@ function VueltaManager(_name, _events, _useSeconds=true, _timeScale=1) : Vuelta(
 		
 		#region -- Procesar eventos
 		var _event = events[index], _eventReady = false;
+		var _this  = self;
 		with (_event) {
 			if (!started) {
-				method(self, funStart) ();
+				method(_this, fnStart) ();
 				start(true);
+				// Marcar que ya se inció
+				started = true;
 			}
 			// Ejecutar delay de entrada
 			if (in() ) {
@@ -287,7 +311,7 @@ function VueltaManager(_name, _events, _useSeconds=true, _timeScale=1) : Vuelta(
 		
 		if (_eventReady) {
 			// Funcion final del EVENTO
-			method(self, _event.funEnd) ();
+			method(_this, _event.fnEnd) ();
 			//
 			n = array_length(events);
 			index = index + 1;
@@ -300,16 +324,17 @@ function VueltaManager(_name, _events, _useSeconds=true, _timeScale=1) : Vuelta(
 				// Destruir time-source
 				time_source_destroy(step);
 				
-				funEnd();
+				fnEnd();
 				
 				// Llamar al Garbage collector
 				gc_collect();
 				
-				if (VUELTA_DEBUG) vuelta_trace(string("{0} No más eventos", name) );
+				if (__VUELTA_DEBUG) vuelta_trace(string("{0} No más eventos", name) );
 			} 
-			// Llamar funcion entre eventos
+			// Llamar funcion al cambiar de eventos
 			else {
-				funBetween(); 
+				method(_this, _event.fnChange) ();
+				fnChange(); 
 			}
 		} 
 		else {
@@ -355,7 +380,7 @@ function VueltaManager(_name, _events, _useSeconds=true, _timeScale=1) : Vuelta(
 	static destroy = function() 
 	{
 		time_source_destroy(step);
-		funEnd();
+		fnEnd();
 		
 		// Llamar al GC
 		gc_collect();
@@ -394,15 +419,14 @@ function VueltaManager(_name, _events, _useSeconds=true, _timeScale=1) : Vuelta(
 	#endregion
 }
 
-
+/** @desc De este constructor deben de heredar todos los VueltaEvent para evitar problemas
+*/
 /// @param {real|array<real>} [delayIn]  =0 delay de entrada. Si es un array selecciona uno de los valores de este
 /// @param {real|array<real>} [delayOut] =0 delay de salida . Si es un array selecciona uno de los valores de este
 function VueltaEvent(_in=0, _out=0) : Vuelta() constructor
 {
 	/// @ignore
 	is = instanceof(self);
-	/// @ignore
-	message = undefined;
 	
 	/// @ignore
 	inVal =  _in;
@@ -441,8 +465,8 @@ function VueltaEvent(_in=0, _out=0) : Vuelta() constructor
 	{
 		if (inVal > 0) {
 			inVal = inVal - 1;
-			if (VUELTA_DEBUG) {
-				if (VUELTA_SHOW_DELAY) vuelta_trace(string("In Delay {0}"), inVal);
+			if (__VUELTA_DEBUG) {
+				if (__VUELTA_SHOW_DELAY) vuelta_trace(string("In Delay {0}"), inVal);
 			}
 			return false;
 		}
@@ -457,8 +481,8 @@ function VueltaEvent(_in=0, _out=0) : Vuelta() constructor
 	{
 		if (ouVal > 0) {
 			ouVal = ouVal - 1;
-			if (VUELTA_DEBUG) {
-				if (VUELTA_SHOW_DELAY) vuelta_trace(string("In Delay {0}"), ouVal);
+			if (__VUELTA_DEBUG) {
+				if (__VUELTA_SHOW_DELAY) vuelta_trace(string("In Delay {0}"), ouVal);
 			}
 			return false;
 		}
@@ -487,14 +511,6 @@ function VueltaEvent(_in=0, _out=0) : Vuelta() constructor
 
 		return self;
 	}
-
-	/// @desc Function Description
-	/// @param {string} message mensaje a mostrar
-	static debugShow = function(_msg) 
-	{
-		message = _msg;
-		return self;
-	}	
 }
 
 
@@ -559,7 +575,7 @@ function VueltaMethod(_fun, _args, _scope, _in=0, _out=0) : VueltaEvent(_in, _ou
 			}
 			ready = true;
 			// Mensaje cuando esta listo
-			if (VUELTA_DEBUG) vuelta_trace("Ready"); 
+			if (__VUELTA_DEBUG) vuelta_trace("Ready"); 
 			
 			return false;
 		} else {
@@ -570,20 +586,18 @@ function VueltaMethod(_fun, _args, _scope, _in=0, _out=0) : VueltaEvent(_in, _ou
 	/// @ignore
 	static start = function()
 	{
-		if (scope == undefined) {
-			// Buscar en las variables
-			if (is_string(scope) ) {
-				var _str = scope;
-				scope = searchVariable(_str);
-				if (VUELTA_DEBUG) vuelta_trace(string("Target es {0}", _str));
-			}
-			// El Manager es el scope default
-			else {
-				scope = getManager();
-				if (VUELTA_DEBUG) vuelta_trace("Target es el manager")
-			}
+		// El Manager es el scope default
+		if (is_undefined(scope) ) {
+			scope = getManager();
+			if (__VUELTA_DEBUG) vuelta_trace("Target es el manager");
 		}
-		
+		// Buscar en las variables
+		else if (is_string(scope) ) {
+			var _str = scope;
+			scope = searchVariable(_str);
+			if (__VUELTA_DEBUG) vuelta_trace(string("Target es {0}", _str));
+		}
+
 		started = true;
 	}
 	
@@ -626,7 +640,7 @@ function VueltaLoop(_fun, _args, _scope, _in, _out) : VueltaMethod(_fun, _args, 
 				var _t = script_execute_ext(_this.fun, _this.args);
 				_this.ready = _t;
 			}
-			if (VUELTA_DEBUG) {
+			if (__VUELTA_DEBUG) {
 				if (ready) vuelta_trace("Ready");
 			}
 			return false;
@@ -667,7 +681,7 @@ function VueltaUntil(_fun, _until, _scope, _arg, _in, _out) : VueltaMethod(_fun,
 				_this.ready = script_execute(_this.unt);
 			}
 			
-			if (VUELTA_DEBUG) {
+			if (__VUELTA_DEBUG) {
 				if (ready) vuelta_trace("Ready");
 			}
 			return false;
@@ -711,7 +725,7 @@ function VueltaDo(_fun, _until, _scope, _arg, _in, _out) : VueltaUntil(_fun, _un
 				}
 			}
 			
-			if (VUELTA_DEBUG) {
+			if (__VUELTA_DEBUG) {
 				if (ready) vuelta_trace("Ready");
 			}
 			return false;
@@ -722,7 +736,7 @@ function VueltaDo(_fun, _until, _scope, _arg, _in, _out) : VueltaUntil(_fun, _un
 }
 
 
-/* @desc Ejecuta varios eventos al mismo tiempo. Cuando todos estos eventos son completados avanza al siguiente evento
+/** @desc Ejecuta varios eventos al mismo tiempo. Cuando todos estos eventos son completados avanza al siguiente evento
 */
 /// @param {Array<Struct.VueltaEvent>} events        Array de VueltaEvents
 /// @param {real|array<real>}          [delayIn]  =0 delay de entrada. Si es un array selecciona uno de los valores de este
@@ -751,16 +765,17 @@ function VueltaPack(_events, _in, _out) : VueltaEvent(_in, _out) constructor
 			for (var i=0; i<_n; i++) {
 				var _ve = _e[i];
 				if (!_ve.started) {
-					_ve.start(true);
 					// Funcion inicial del evento
-					method(self, funStart) (true);
+					method(self, _ve.fnStart) (true);
+					_ve.start(true);
+					_ve.started = true;
 				}
 				
 				var _rd = _ve.event();
 				// Eliminar para no ejecutar de nuevo
 				if (_rd) {
 					// Ejecutar funcion final del evento
-					method(self, _ve.funEnd) ();
+					method(self, _ve.fnEnd) ();
 					array_delete(_e, i, 1);
 					_n--;
 				}
@@ -788,7 +803,7 @@ function VueltaPack(_events, _in, _out) : VueltaEvent(_in, _out) constructor
 }
 
 
-/* @desc Repite un vuelta una cantidad de veces (puede ser infinitamente). All llegar a 0 avanza al siguiente evento
+/** @desc Repite un vuelta una cantidad de veces (puede ser infinitamente). All llegar a 0 avanza al siguiente evento
 */
 /// @param {real}             repeatTimes infinity para repetir para siempre. No puede ser menor o igual a 0
 /// @param {real|array<real>} [delayIn]  =0 delay de entrada. Si es un array selecciona uno de los valores de este
@@ -872,7 +887,7 @@ function VueltaMove(_ins, _speed, _posX, _posY, _rel=false, _in, _out) : VueltaE
 	static event = function()
 	{
 		if (!ready) {
-			if (VUELTA_DEBUG && !instance_exists(target) ) vuelta_trace("Target == No exists");
+			if (__VUELTA_DEBUG && !instance_exists(target) ) vuelta_trace("Target == No exists");
 			var _x, _y;
 			if (relative) {
 				_x = target.x + positionX;
@@ -918,8 +933,8 @@ function VueltaMove(_ins, _speed, _posX, _posY, _rel=false, _in, _out) : VueltaE
 			// Evento al llegar al medio
 			var _percent = round(distance*distancePercent);
 			
-			if (VUELTA_DEBUG) vuelta_trace(string("Move %: {0} Distance: {1}", _percent, _distance));
-			if (_distance == _percent) fnPercent();
+			if (__VUELTA_DEBUG) vuelta_trace(string("Move %: {0} Distance: {1}", _percent, _distance));
+			if (_distance == _percent) method(manager, fnPercent) ();
 			
 			return false;
 		} 
@@ -945,7 +960,7 @@ function VueltaMove(_ins, _speed, _posX, _posY, _rel=false, _in, _out) : VueltaE
 		
 		// Obtener distancia total
 		distance = point_distance(target.x, target.y, positionX, positionY);
-		
+		manager  = getManager();
 		started = true;
 	}
 	
