@@ -5,6 +5,7 @@
 show_debug_message("Vuelta! {0} te da la bienvenida", __VUELTA_VERSION);
 
 /// @desc Padres de todos
+/// @ignore
 function Vuelta() constructor 
 {
 	// Variables que todos los elementos vuelta pueden usar y modificar
@@ -111,6 +112,7 @@ function Vuelta() constructor
 	
 	/// @desc Cambia la escala de tiempo
 	/// @param {real} [timeScale]=1
+	/// @return {self}
 	static setTimeScale = function(_timeScale=1)
 	{
 		timeScale = _timeScale;
@@ -119,6 +121,7 @@ function Vuelta() constructor
 	
 	/// @desc Cambia el nombre de esta Vuelta
 	/// @param {string} name Description
+	/// @return {self}
 	static setName = function(_name)
 	{
 		name = _name;
@@ -126,6 +129,7 @@ function Vuelta() constructor
 	}
 	
 	/// @param {Struct.VueltaManager} VueltaManager
+	/// @return {self}
 	static setManager = function(_vtm) 
 	{
 		manager = weak_ref_create(_vtm);
@@ -134,6 +138,7 @@ function Vuelta() constructor
 	
 	/// @desc Devuelve el VueltaManager que lo maneja
 	/// @return {Struct.VueltaManager}
+	/// @return {self}
 	static getManager = function()
 	{
 		return (manager.ref);
@@ -141,6 +146,7 @@ function Vuelta() constructor
 	
 	/// @desc Devolver si esta listo
 	/// @return {bool}
+	/// @return {self}
 	static isReady = function() 
 	{
 		return (ready);
@@ -154,6 +160,7 @@ function Vuelta() constructor
 	}
 
 	/// @param {function} endFunction
+	/// @return {self}
 	static setFnEnd  = function(_fn) 
 	{
 		fnEnd = _fn;
@@ -161,6 +168,7 @@ function Vuelta() constructor
 	}
 	
 	/// @param {function} startFunction
+	/// @return {self}
 	static setFnStart = function(_fn)
 	{
 		fnStart = _fn;
@@ -168,6 +176,7 @@ function Vuelta() constructor
 	}
 	
 	/// @param {function} changeFunction
+	/// @return {self}
 	static setFnChange = function(_fn)
 	{
 		fnChange = _fn;
@@ -176,6 +185,7 @@ function Vuelta() constructor
 
 	/// @desc Function Description
 	/// @param {string} message mensaje a mostrar
+	/// @return {self}
 	static debugShow = function(_msg) 
 	{
 		message = _msg;
@@ -223,7 +233,7 @@ function VueltaManager(_name, _events, _useSeconds=true, _timeScale=1) : Vuelta(
 	useSeconds = _useSeconds;
 	/// @ignore Cuantos frames han transcurrido
 	frameCount  = 0;
-
+	
 	// Feather disable once GM1043
 	/// @ignore
 	step = time_source_create(time_source_game, 1, time_source_units_frames, method(self, update), [], -1);
@@ -419,6 +429,7 @@ function VueltaManager(_name, _events, _useSeconds=true, _timeScale=1) : Vuelta(
 	#endregion
 }
 
+
 /** @desc De este constructor deben de heredar todos los VueltaEvent para evitar problemas
 */
 /// @param {real|array<real>} [delayIn]  =0 delay de entrada. Si es un array selecciona uno de los valores de este
@@ -499,6 +510,7 @@ function VueltaEvent(_in=0, _out=0) : Vuelta() constructor
 
 	/// @param {real} delayIn  delay de entrada
 	/// @param {real} delayOut delay de salida
+	/// @return {self}
 	static setDelay = function(_in, _ou)
 	{
 		inVal = _in ?? inVal;
