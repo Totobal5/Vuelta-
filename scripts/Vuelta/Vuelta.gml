@@ -1,6 +1,6 @@
-#macro __VUELTA_VERSION    "v1.0"
-#macro __VUELTA_DEBUG      true        // Permite mostrar mensajes
-#macro __VUELTA_SHOW_DELAY false
+#macro __VUELTA_VERSION    "v1.0"		
+#macro __VUELTA_DEBUG      false		// Permite mostrar mensajes
+#macro __VUELTA_SHOW_DELAY false		
 
 show_debug_message("Vuelta! {0} te da la bienvenida", __VUELTA_VERSION);
 
@@ -233,7 +233,7 @@ function VueltaManager(_name, _events, _useSeconds=true, _timeScale=1) : Vuelta(
 	useSeconds = _useSeconds;
 	/// @ignore Cuantos frames han transcurrido
 	frameCount  = 0;
-	
+
 	// Feather disable once GM1043
 	/// @ignore
 	step = time_source_create(time_source_game, 1, time_source_units_frames, method(self, update), [], -1);
@@ -429,7 +429,6 @@ function VueltaManager(_name, _events, _useSeconds=true, _timeScale=1) : Vuelta(
 	#endregion
 }
 
-
 /** @desc De este constructor deben de heredar todos los VueltaEvent para evitar problemas
 */
 /// @param {real|array<real>} [delayIn]  =0 delay de entrada. Si es un array selecciona uno de los valores de este
@@ -477,7 +476,7 @@ function VueltaEvent(_in=0, _out=0) : Vuelta() constructor
 		if (inVal > 0) {
 			inVal = inVal - 1;
 			if (__VUELTA_DEBUG) {
-				if (__VUELTA_SHOW_DELAY) vuelta_trace(string("In Delay {0}"), inVal);
+				if (__VUELTA_SHOW_DELAY) vuelta_trace(string("In Delay {0}", inVal) );
 			}
 			return false;
 		}
@@ -493,7 +492,7 @@ function VueltaEvent(_in=0, _out=0) : Vuelta() constructor
 		if (ouVal > 0) {
 			ouVal = ouVal - 1;
 			if (__VUELTA_DEBUG) {
-				if (__VUELTA_SHOW_DELAY) vuelta_trace(string("In Delay {0}"), ouVal);
+				if (__VUELTA_SHOW_DELAY) vuelta_trace(string("In Delay {0}", ouVal));
 			}
 			return false;
 		}
@@ -508,6 +507,7 @@ function VueltaEvent(_in=0, _out=0) : Vuelta() constructor
 		return self;
 	}
 
+
 	/// @param {real} delayIn  delay de entrada
 	/// @param {real} delayOut delay de salida
 	/// @return {self}
@@ -515,13 +515,41 @@ function VueltaEvent(_in=0, _out=0) : Vuelta() constructor
 	{
 		inVal = _in ?? inVal;
 		inRep = inVal;
-		if (is_array(_in) ) inVal = _in[irandom(array_length( _in) - 1) ];
+		if (is_array(_in) ) inVal = _in[irandom(array_length( _in)-1) ];
 		/// @ignore
 		ouVal = _ou ?? ouVal;
 		ouRep = ouVal;
-		if (is_array(_ou) ) ouVal = _ou[irandom(array_length(_ou) - 1) ];
+		if (is_array(_ou) ) ouVal = _ou[irandom(array_length(_ou)-1) ];
 
 		return self;
+	}
+	
+	/// @param {real} delayOut delay de salida
+	static setDOu = function(_ou) 
+	{
+		ouVal = _ou;
+		if (is_array(_ou) ) {
+			var _size  = array_length(_ou)-1;
+			var _index = irandom(_size);
+			ouVal = _ou[_index];
+		}
+		ouRep = _ou;
+		
+		return self;
+	}
+	
+	/// @param {real} delayIn  delay de entrada
+	static setDIn = function(_in)
+	{
+		inVal = _in;
+		if (is_array(_in) ) {
+			var _size  = array_length(_in)-1;
+			var _index = irandom(_size);
+			inVal = _in[_index];
+		}
+		inRep = _in;
+		
+		return self;		
 	}
 }
 
@@ -530,7 +558,7 @@ function VueltaEvent(_in=0, _out=0) : Vuelta() constructor
 */
 /// @param {real|array<real>} [delayIn]  =0 delay de entrada. Si es un array selecciona uno de los valores de este
 /// @param {real|array<real>} [delayOut] =0 delay de salida . Si es un array selecciona uno de los valores de este
-function VueltaPause(_in=0, _out=0) : Vuelta() constructor
+function VueltaPause(_in=0, _out=0) : VueltaEvent() constructor
 {
 	/// @ignore
 	is = instanceof(self);
@@ -546,12 +574,6 @@ function VueltaPause(_in=0, _out=0) : Vuelta() constructor
 			
 			ready = true;
 		} else return (out() );
-	}
-
-	/// @ignore
-	static start = function() 
-	{
-		started = true;
 	}
 }
 
@@ -648,6 +670,7 @@ function VueltaLoop(_fun, _args, _scope, _in, _out) : VueltaMethod(_fun, _args, 
 	{
 		if (!ready) {
 			var _this = self;
+			// Feather ignore GM1049
 			with (scope) {
 				var _t = script_execute_ext(_this.fun, _this.args);
 				_this.ready = _t;
@@ -687,6 +710,7 @@ function VueltaUntil(_fun, _until, _scope, _arg, _in, _out) : VueltaMethod(_fun,
 	{
 		if (!ready) {
 			var _this = self;
+			// Feather ignore GM1049
 			with (scope) {
 				script_execute(_this.fun);
 				// Comprobar si se cumple la condicion para avanzar
