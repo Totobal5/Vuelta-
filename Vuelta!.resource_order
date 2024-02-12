@@ -1,9 +1,20 @@
 {
   "FolderOrderSettings": [
     {"name":"Extensions","order":1,"path":"folders/Extensions.yy",},
-    {"name":"Vuelta","order":1,"path":"folders/Extensions/Vuelta.yy",},
+    {"name":"Vuelta!","order":1,"path":"folders/Extensions/Vuelta!.yy",},
+    {"name":"For Libraries","order":8,"path":"folders/Extensions/Vuelta!/Eventos/For Libraries.yy",},
   ],
   "ResourceOrderSettings": [
-    {"name":"VueltaScripts","order":1,"path":"scripts/VueltaScripts/VueltaScripts.yy",},
+    {"name":"vt_Method","order":10,"path":"scripts/vt_Method/vt_Method.yy",},
+    {"name":"vt_Pack","order":12,"path":"scripts/vt_Pack/vt_Pack.yy",},
+    {"name":"vt_Sprite","order":16,"path":"scripts/vt_Sprite/vt_Sprite.yy",},
+    {"name":"vt_Loop","order":9,"path":"scripts/vt_Loop/vt_Loop.yy",},
+    {"name":"__vt_settings","order":1,"path":"scripts/__vt_settings/__vt_settings.yy",},
+    {"name":"vt_scripts","order":3,"path":"scripts/vt_scripts/vt_scripts.yy",},
+    {"name":"vt_Manager","order":2,"path":"scripts/vt_Manager/vt_Manager.yy",},
+    {"name":"vt_Move","order":11,"path":"scripts/vt_Move/vt_Move.yy",},
+    {"name":"vt_Pause","order":14,"path":"scripts/vt_Pause/vt_Pause.yy",},
+    {"name":"vt_Parent","order":13,"path":"scripts/vt_Parent/vt_Parent.yy",},
+    {"name":"vt_Replay","order":15,"path":"scripts/vt_Replay/vt_Replay.yy",},
   ],
 }

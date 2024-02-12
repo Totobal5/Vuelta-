@@ -1,11 +1,11 @@
 {
   "resourceType": "GMScript",
   "resourceVersion": "1.0",
-  "name": "VueltaScripts",
+  "name": "vt_Move",
   "isCompatibility": false,
   "isDnD": false,
   "parent": {
-    "name": "Vuelta",
-    "path": "folders/Extensions/Vuelta.yy",
+    "name": "Eventos",
+    "path": "folders/Extensions/Vuelta!/Eventos.yy",
   },
 }
